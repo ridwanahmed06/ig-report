@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+  <meta name="referrer" content="no-referrer">
+  <meta name="description" content="See who doesn't follow you back on Instagram. Drop in your own data export. Nothing is uploaded; it all runs in your browser.">
+  <title>IG Report: who doesn't follow you back</title>
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="styles/tokens.css">
+  <link rel="stylesheet" href="styles/reset.css">
+  <link rel="stylesheet" href="styles/base.css">
+  <link rel="stylesheet" href="styles/app.css">
+  <meta property="og:title" content="IG Report: who doesn't follow you back">
+  <meta property="og:description" content="Drop in your Instagram data export and see who doesn't follow you back. Private: nothing leaves your browser.">
+  <meta property="og:type" content="website">
+  <script src="scripts/main.js" type="module"></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="topbar page">
+    <a class="wordmark" href="./" aria-label="IG Report home">
+      <svg class="wordmark-mark" viewBox="0 0 32 20" aria-hidden="true">
+        <circle cx="11" cy="10" r="8.5" />
+        <circle cx="21" cy="10" r="8.5" />
+      </svg>
+      <span>IG Report</span>
+    </a>
+    <a class="topbar-link" href="https://github.com/ridwanahmed06/ig-report">Source on GitHub</a>
+  </header>
+
+  <main id="main" class="page">
+    <!-- ============ Start: upload ============ -->
+    <section id="start" class="start" aria-labelledby="start-title">
+      <h1 id="start-title" class="start-title">Who doesn't follow you back?</h1>
+      <p class="start-lede">Drop in your Instagram data export to see who doesn't follow you back. Everything happens in this browser tab. Nothing is uploaded.</p>
+
+      <div id="dropzone" class="dropzone" tabindex="0" role="button" aria-label="Choose your Instagram export" aria-describedby="drop-help">
+        <svg class="dropzone-icon" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M12 16V4m0 0-4.5 4.5M12 4l4.5 4.5M4 15v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3" />
+        </svg>
+        <p class="dropzone-title">Drop your export .zip here</p>
+        <p id="drop-help" class="dropzone-help">or click to choose it. You can also pick <code>followers_1.json</code> and <code>following.json</code> on their own.</p>
+      </div>
+      <input id="file-input" class="visually-hidden" type="file" accept=".zip,.json,.html,application/zip,application/json,text/html" multiple tabindex="-1" aria-hidden="true">
+
+      <p id="status" class="status" role="status" aria-live="polite"></p>
+      <div id="error" class="error" role="alert" hidden></div>
+
+      <p class="sample-line">No export yet? <button id="sample-btn" class="link-button" type="button">Try it with sample data</button></p>
+
+      <details class="guide" open>
+        <summary>How to get your Instagram export</summary>
+        <ol class="guide-steps">
+          <li>Open <a href="https://accountscenter.instagram.com/info_and_permissions/dyi/" target="_blank" rel="noopener noreferrer">Download your information</a> in Instagram's Accounts Center (log in if asked).</li>
+          <li>Choose <strong>Download or transfer information</strong>, pick your account, then <strong>Some of your information</strong>.</li>
+          <li>Tick only <strong>Followers and following</strong> and continue to <strong>Download to device</strong>.</li>
+          <li>Set the date range to <strong>All time</strong> and the format to <strong>JSON</strong>, then create the file.</li>
+          <li>Instagram emails you when it's ready, usually within minutes. Download the .zip and drop it above. No need to unzip it.</li>
+        </ol>
+      </details>
+    </section>
+
+    <!-- ============ Results ============ -->
+    <section id="results" class="results" aria-labelledby="results-title" hidden>
+      <h2 id="results-title" class="results-title" tabindex="-1"></h2>
+      <p id="results-meta" class="results-meta"></p>
+
+      <figure class="venn" aria-hidden="true">
+        <svg viewBox="0 0 340 196" class="venn-svg">
+          <defs>
+            <clipPath id="clip-left"><circle cx="128" cy="104" r="84" /></clipPath>
+            <mask id="mask-not-left"><rect width="340" height="196" fill="#fff" /><circle cx="128" cy="104" r="84" fill="#000" /></mask>
+            <mask id="mask-not-right"><rect width="340" height="196" fill="#fff" /><circle cx="212" cy="104" r="84" fill="#000" /></mask>
+          </defs>
+          <g class="venn-region" data-region="fans"><circle cx="128" cy="104" r="84" mask="url(#mask-not-right)" /></g>
+          <g class="venn-region" data-region="mutuals"><circle cx="212" cy="104" r="84" clip-path="url(#clip-left)" /></g>
+          <g class="venn-region" data-region="notFollowingBack"><circle cx="212" cy="104" r="84" mask="url(#mask-not-left)" /></g>
+          <circle class="venn-outline" cx="128" cy="104" r="84" />
+          <circle class="venn-outline" cx="212" cy="104" r="84" />
+          <text class="venn-caption" x="96" y="12">Follow you</text>
+          <text class="venn-caption" x="244" y="12">You follow</text>
+          <text class="venn-count" data-count="fans" x="92" y="112"></text>
+          <text class="venn-count" data-count="mutuals" x="170" y="112"></text>
+          <text class="venn-count" data-count="notFollowingBack" x="248" y="112"></text>
+        </svg>
+      </figure>
+
+      <div class="tabs" role="tablist" aria-label="Lists">
+        <button class="tab" role="tab" id="tab-notFollowingBack" data-list="notFollowingBack" aria-controls="panel" aria-selected="true">Not following back <span class="tab-count"></span></button>
+        <button class="tab" role="tab" id="tab-fans" data-list="fans" aria-controls="panel" aria-selected="false" tabindex="-1">Fans <span class="tab-count"></span></button>
+        <button class="tab" role="tab" id="tab-mutuals" data-list="mutuals" aria-controls="panel" aria-selected="false" tabindex="-1">Mutuals <span class="tab-count"></span></button>
+      </div>
+
+      <div id="panel" class="panel" role="tabpanel" aria-labelledby="tab-notFollowingBack">
+        <p id="list-description" class="list-description"></p>
+        <div class="toolbar">
+          <label class="search">
+            <span class="visually-hidden">Search usernames</span>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5" /><path d="m20 20-4.2-4.2" /></svg>
+            <input id="search" type="search" placeholder="Search usernames" autocomplete="off" spellcheck="false">
+          </label>
+          <button id="copy-btn" class="btn btn-quiet" type="button">Copy usernames</button>
+          <button id="csv-btn" class="btn btn-quiet" type="button">Download CSV</button>
+        </div>
+        <p id="sample-note" class="sample-note" hidden>These are sample accounts, so the rows don't link anywhere.</p>
+        <ul id="list" class="list"></ul>
+        <p class="more" id="more-wrap" hidden><button id="more-btn" class="btn btn-quiet" type="button"></button></p>
+        <p id="empty" class="empty" hidden></p>
+      </div>
+
+      <p class="restart"><button id="restart-btn" class="btn btn-quiet" type="button">Check another export</button></p>
+    </section>
+  </main>
+
+  <p id="announcer" class="visually-hidden" role="status" aria-live="polite"></p>
+
+  <footer class="footer page">
+    <p>Free and open source. Your export is read in this tab only and never sent anywhere. Not affiliated with Instagram or Meta.</p>
+  </footer>
+</body>
+</html>
