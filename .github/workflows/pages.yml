@@ -10,7 +10,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: pages
+  group: pages-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -23,12 +23,26 @@ jobs:
           node-version: 24
       - run: npm test
 
-  deploy:
+  # Upload the site in its own job; the deploy job runs after it has finished.
+  build:
     if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
     needs: test
     runs-on: ubuntu-latest
     permissions:
       contents: read
+      pages: write
+      id-token: write
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/configure-pages@v6
+      - uses: actions/upload-pages-artifact@v5
+        with:
+          path: src
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
       actions: read
       pages: write
       id-token: write
@@ -36,10 +50,5 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      - uses: actions/checkout@v7
-      - uses: actions/configure-pages@v6
-      - uses: actions/upload-pages-artifact@v5
-        with:
-          path: src
       - id: deployment
         uses: actions/deploy-pages@v5
